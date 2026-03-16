@@ -29,10 +29,10 @@ class Labeler:
         self.ey = 0    # end y
 
         # Current frame data
-        self.boxes = []           #  boxes
+        self.boxes = []           # boxes
         self.original = None      # original frame
         self.display = None       # display frame
-        self.waiting = False      # label waiting?
+        self.waiting = False      # waiting for label?
         self.idx = 0              # current frame index
 
         # Stats
@@ -49,7 +49,7 @@ class Labeler:
         }
 
     def mouse_event(self, event, x, y, flags, param):
-        """Mouse se box draw karna"""
+        """Draw box using mouse"""
 
         # ── Mouse click start ──
         if event == cv2.EVENT_LBUTTONDOWN:
@@ -64,7 +64,7 @@ class Labeler:
             if self.drawing:
                 self.ex = x
                 self.ey = y
-                # Live rectangle 
+                # Live rectangle
                 self.refresh()
                 cv2.rectangle(
                     self.display,
@@ -80,12 +80,12 @@ class Labeler:
             self.ex = x
             self.ey = y
 
-            # Box ka size check
+            # Check box size
             w = abs(self.ex - self.sx)
             h = abs(self.ey - self.sy)
 
             if w > 15 and h > 15:
-                # Valid box - ab label maang
+                # Valid box - now ask for label
                 self.waiting = True
                 self.refresh()
 
@@ -94,7 +94,7 @@ class Labeler:
                 x2 = max(self.sx, self.ex)
                 y2 = max(self.sy, self.ey)
 
-                # Pending box dikha (yellow)
+                # Show pending box (yellow)
                 cv2.rectangle(self.display, (x1, y1), (x2, y2),
                               (0, 255, 255), 3)
 
@@ -109,13 +109,13 @@ class Labeler:
 
                 cv2.imshow("Label Tool", self.display)
             else:
-                print("   ⚠ Box bahut chhota hai, phir se try kar")
+                print("   ⚠ Box is too small, please try again")
 
     def refresh(self):
-        """Frame + existing boxes redraw kar"""
+        """Redraw frame + existing boxes"""
         self.display = self.original.copy()
 
-        # Existing boxes draw kar
+        # Draw existing boxes
         for box in self.boxes:
             bx1, by1, bx2, by2 = box['bbox']
             label = box['label']
@@ -149,7 +149,7 @@ class Labeler:
                     cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 255, 255), 1)
 
     def save_labels(self, frame_path):
-        """YOLO format mein save kar"""
+        """Save in YOLO format"""
 
         # 80% train, 20% val
         split = 'train' if random.random() < 0.8 else 'val'
@@ -157,11 +157,11 @@ class Labeler:
         fname = os.path.basename(frame_path)
         name = os.path.splitext(fname)[0]
 
-        # Image copy
+        # Copy image
         shutil.copy2(frame_path,
                      f"{self.output_dir}/images/{split}/{fname}")
 
-        # Label file bana
+        # Create label file
         img = cv2.imread(frame_path)
         ih, iw = img.shape[:2]
 
@@ -185,7 +185,7 @@ class Labeler:
                 f.write(f"{cls_id} {xc:.6f} {yc:.6f} {bw:.6f} {bh:.6f}\n")
 
     def create_yaml(self):
-        """data.yaml file bana"""
+        """Create data.yaml file"""
 
         abs_path = os.path.abspath(self.output_dir)
 
@@ -211,18 +211,18 @@ names:
 ╠═══════════════════════════════════════════════════╣
 ║  Frames: {len(self.frames)}
 ║                                                   
-║  MOUSE SE BOX DRAW KAR, PHIR KEY PRESS KAR:      
+║  DRAW A BOX WITH MOUSE, THEN PRESS A KEY:         
 ║                                                   
 ║  'l' = Legal headlight    (GREEN box)             
 ║  'i' = Illegal headlight  (RED box)               
 ║  'p' = Number plate       (YELLOW box)            
 ║                                                   
-║  HAR GAADI KE LIYE:                               
-║  → Headlight pe box draw → 'l' ya 'i'            
-║  → Plate pe box draw → 'p'                        
+║  FOR EACH VEHICLE:                                
+║  → Draw box on headlight → press 'l' or 'i'      
+║  → Draw box on plate → press 'p'                  
 ║                                                   
 ║  'u' = Undo last box                              
-║  'n' = Next frame (save + agle pe jaa)            
+║  'n' = Next frame (save + move to next)           
 ║  's' = Skip frame                                 
 ║  'q' = Quit                                       
 ╚═══════════════════════════════════════════════════╝
@@ -236,13 +236,13 @@ names:
             fname = self.frames[self.idx]
             fpath = os.path.join(self.frames_dir, fname)
 
-            # Frame load
+            # Load frame
             self.original = cv2.imread(fpath)
             if self.original is None:
                 self.idx += 1
                 continue
 
-            # Resize agar bahut bada hai
+            # Resize if too large
             h, w = self.original.shape[:2]
             if w > 1920:
                 scale = 1920 / w
@@ -272,7 +272,7 @@ names:
                     })
                     self.legal_count += 1
                     self.waiting = False
-                    print(f"   ✅ LEGAL headlight added")
+                    print(f"    LEGAL headlight added")
 
                     self.refresh()
                     cv2.imshow("Label Tool", self.display)
@@ -290,7 +290,7 @@ names:
                     })
                     self.illegal_count += 1
                     self.waiting = False
-                    print(f"   ❌ ILLEGAL headlight added")
+                    print(f"    ILLEGAL headlight added")
 
                     self.refresh()
                     cv2.imshow("Label Tool", self.display)
@@ -356,7 +356,7 @@ names:
 
         cv2.destroyAllWindows()
 
-        # data.yaml bana
+        # Create data.yaml
         self.create_yaml()
 
         # Summary
@@ -365,22 +365,22 @@ names:
 
         print(f"""
 ╔═══════════════════════════════════════════════╗
-║           ✅ LABELING COMPLETE!               ║
+║            LABELING COMPLETE!                 ║
 ╠═══════════════════════════════════════════════╣
 ║                                               
-║  📊 Stats:                                    
+║   Stats:                                    
 ║     Frames labeled: {self.frame_count}
 ║     Legal boxes:    {self.legal_count}
 ║     Illegal boxes:  {self.illegal_count}
 ║     Plate boxes:    {self.plate_count}
 ║     Total boxes:    {self.legal_count + self.illegal_count + self.plate_count}
 ║                                               
-║  📁 Dataset:                                  
+║   Dataset:                                  
 ║     Train: {train_imgs} images
 ║     Val:   {val_imgs} images
 ║     YAML:  dataset/data.yaml
 ║                                               
-║  ✅ Next: python step3_train.py               
+║   Next: python step3_train.py               
 ╚═══════════════════════════════════════════════╝
         """)
 

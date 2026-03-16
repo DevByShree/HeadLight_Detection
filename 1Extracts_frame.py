@@ -2,13 +2,14 @@ import cv2
 import os
 import numpy as np
 
-# This code is for only extract the frmes in videos 
+# This code is for only extracting the frames from videos
 
 videos = [
     "Videos/V1.webm",
     "Videos/V2.webm",
     "Videos/V3.webm",
     "Videos/V4.webm",
+    "Videos/V5.webm",
 ]
 os.makedirs("all_frames",exist_ok=True)
 
@@ -17,7 +18,7 @@ total_saved=0
 for video_path in videos:
 
     if not os.path.exists(video_path):
-        print("There is no video exists")
+        print("Video file does not exist")
         continue
 
     cap = cv2.VideoCapture(video_path)
@@ -53,4 +54,4 @@ for video_path in videos:
 print(f"\n{'='*40}")
 print(f" Total frames saved: {total_saved}")
 print(f" Saved in: all_frames/")
-print(f"\nNext: step2 run kar - frames sort karna hai")
+print(f"\nNext: run step2 - sort the frames")

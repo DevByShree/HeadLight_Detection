@@ -2,11 +2,11 @@
 headlight_demo/step4_detect.py
 
 FINAL DETECTION:
-- Har gaadi detect karega
-- Headlight legal/illegal check karega
-- Illegal gaadi ki NUMBER PLATE padhega
-- WARNING dikhayega
-- Screenshot save karega
+- Detect every vehicle
+- Check whether the headlight is legal or illegal
+- Read the number plate of illegal vehicles
+- Display a warning message
+- Save a screenshot as evidence
 
 Command: python step4_detect.py
 """
@@ -106,7 +106,7 @@ def process_video(model, video_path):
             break
 
         frame_num += 1
-        results = model(frame, conf=0.3, verbose=False)
+        results = model(frame, conf=0.15, verbose=False)
 
         legals = []
         illegals = []
@@ -216,7 +216,7 @@ if __name__ == "__main__":
 
     os.makedirs("output/violations", exist_ok=True)
 
-    model_path = "runs/detect/headlight_plate/weights/best.pt"
+    model_path = "runs/detect/headlight_V2/weights/best.pt"
     print(f"🔄 Loading: {model_path}")
     model = YOLO(model_path)
     print(" Model loaded!\n")
@@ -226,6 +226,7 @@ if __name__ == "__main__":
         "Videos/V2.webm",
         "Videos/V3.webm",
         "Videos/V4.webm",
+        "Videos/V5.webm",
     ]
 
     all_violations = []
