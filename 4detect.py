@@ -210,7 +210,6 @@ def process_video(model, video_path):
     return violations
 
 
-# ═══════════ MAIN ═══════════
 
 if __name__ == "__main__":
 
