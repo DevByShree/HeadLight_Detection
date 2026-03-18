@@ -381,7 +381,7 @@ names:
 ║     YAML:  dataset/data.yaml
 ║                                               
 ║   Next: python step3_train.py               
-╚═══════════════════════════════════════════════╝
+
         """)
 
 
