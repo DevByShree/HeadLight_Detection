@@ -122,17 +122,17 @@ def process_video(model, video_path):
 
         annotated = frame.copy()
 
-        # Legal - GREEN
+        # Legal GREEN
         for b in legals:
             cv2.rectangle(annotated, (b[0],b[1]), (b[2],b[3]), (0,255,0), 2)
             cv2.putText(annotated, "LEGAL", (b[0], b[1]-8),
                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,255,0), 2)
 
-        # Plates - YELLOW
+        # Plates  YELLOW
         for b in plates:
             cv2.rectangle(annotated, (b[0],b[1]), (b[2],b[3]), (255,255,0), 2)
 
-        # Illegal - RED + WARNING + PLATE READ
+        # Illegal  RED + WARNING + PLATE READ
         for b in illegals:
             cv2.rectangle(annotated, (b[0],b[1]), (b[2],b[3]), (0,0,255), 4)
             cv2.putText(annotated, "ILLEGAL", (b[0], b[1]-10),
@@ -216,7 +216,7 @@ if __name__ == "__main__":
     os.makedirs("output/violations", exist_ok=True)
 
     model_path = "runs/detect/headlight_V2/weights/best.pt"
-    print(f"🔄 Loading: {model_path}")
+    print(f" Loading: {model_path}")
     model = YOLO(model_path)
     print(" Model loaded!\n")
 
