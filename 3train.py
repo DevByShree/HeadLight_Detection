@@ -7,21 +7,28 @@ from ultralytics import YOLO
 
 print("Training starting...\n")
 
-model = YOLO("yolov8n.pt")
+model = YOLO("yolov8s.pt")
 
 results = model.train(
     data="dataset/data.yaml",
-    epochs=100,           
-    imgsz=640,
+    epochs=150,           
+    imgsz=800,
     batch=8,
-    name="headlight_v2",  
+    name="headlight_v3",  
     augment=True,
     hsv_h=0.015,
-    hsv_s=0.7,
-    hsv_v=0.4,
+    hsv_s=0.8,
+    hsv_v=0.5,
     fliplr=0.5,
     mosaic=1.0,
-    patience=20,
+    mixup=0.2,
+    copy_paste=0.1,
+    scale=0.5,
+    translate=0.1,
+    lr0=0.01,
+    lrf=0.001,
+    warmup_ephochs=5,
+    patience=25,
     save=True,
     plots=True,
     device="cpu"

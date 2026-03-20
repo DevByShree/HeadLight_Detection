@@ -215,7 +215,7 @@ if __name__ == "__main__":
 
     os.makedirs("output/violations", exist_ok=True)
 
-    model_path = "runs/detect/headlight_V2/weights/best.pt"
+    model_path = "runs/detect/headlight_v2/weights/best.pt"
     print(f" Loading: {model_path}")
     model = YOLO(model_path)
     print(" Model loaded!\n")
