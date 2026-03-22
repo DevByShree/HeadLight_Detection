@@ -15,45 +15,44 @@ This project detects **illegal headlights** on vehicles using AI (YOLOv8), reads
 
 ---
 
-##  Folder Structure
 Light/
-│
-├── Videos/ # Your input videos
-│ ├── V1.webm
-│ ├── V2.webm
-│ ├── V3.webm
-│ ├── V4.webm
-│ └── V5.webm
-│
-├── 1extract.py # Step 1 → Extract frames from videos
-├── 2label.py # Step 2 → Label frames manually
-├── 3train.py # Step 3 → Train the YOLOv8 model
-├── 4detect.py # Step 4 → Run detection on videos
-│
-├── all_frames/ # Extracted frames (auto-created)
-│
-├── dataset/ # Labeled dataset (auto-created)
-│ ├── images/
-│ │ ├── train/
-│ │ └── val/
-│ ├── labels/
-│ │ ├── train/
-│ │ └── val/
-│ └── data.yaml
-│
-├── runs/ # Trained model (auto-created)
-│ └── detect/
-│ └── headlight_v3/
-│ └── weights/
-│ └── best.pt # ← Your final trained model
-│
-├── output/ # Detection results (auto-created)
-│ ├── violations/ # Violation screenshots
-│ └── violation_report.json # Final report
-│
-└── README.md
-
-text
+|
+|-- Videos/ (Your input videos)
+| |-- V1.webm
+| |-- V2.webm
+| |-- V3.webm
+| |-- V4.webm
+| |-- V5.webm
+|
+|-- 1extract.py (Step 1 - Extract frames)
+|-- 2label.py (Step 2 - Label frames)
+|-- 3train.py (Step 3 - Train model)
+|-- 4detect.py (Step 4 - Run detection)
+|-- README.md
+|
+|-- all_frames/ (Extracted frames - auto created)
+| |-- V1_f00000.jpg
+| |-- V1_f00010.jpg
+|
+|-- dataset/ (Labeled data - auto created)
+| |-- images/
+| | |-- train/
+| | |-- val/
+| |-- labels/
+| | |-- train/
+| | |-- val/
+| |-- data.yaml
+|
+|-- runs/ (Trained model - auto created)
+| |-- detect/
+| |-- headlight_v3/
+| |-- weights/
+| |-- best.pt (Your final model)
+|
+|-- output/ (Results - auto created)
+|-- V1_result.mp4 (Output video)
+|-- violations/ (Violation screenshots)
+|-- violation_report.json (Final report)
 
 
 ---
