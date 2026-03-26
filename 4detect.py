@@ -18,6 +18,7 @@ from datetime import datetime
 import os
 import json
 import re
+import time 
 
 # OCR Setup
 try:
@@ -77,6 +78,21 @@ def find_nearest_plate(illegal_box, plates):
     return nearest
 
 
+def  get_violation_key(illegal_box,plate_text):
+    if plate_text and plate_text not in ["NOT DETECTED","UNREADABLE","OCR_NOT_INSTALLED"]:
+
+        return plate_text.strip()
+
+    x1, y1, x2, y2 = illegal_box
+    cx = int((x1 + x2) / 2)
+    cy = int((y1 + y2) / 2)
+
+    # round to reduce minor frame-to-frame movement
+    cx = (cx // 50) * 50
+    cy = (cy // 50) * 50
+
+    return f"BOX_{cx}_{cy}"
+
 def process_video(model, video_path):
     name = os.path.splitext(os.path.basename(video_path))[0]
     output_path = f"output/{name}_result.mp4"
@@ -99,6 +115,8 @@ def process_video(model, video_path):
 
     violations = []
     frame_num = 0
+    logged_keys = {}
+    cooldown_seconds = 5
 
     while cap.isOpened():
         ret, frame = cap.read()
@@ -176,12 +194,21 @@ def process_video(model, video_path):
             cv2.putText(annotated, "Fine: Rs.1000-5000", (wx+10, wy+150),
                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,255,255), 2)
 
-            v = {'frame': frame_num, 'time': time_str,
-                 'plate': plate_text, 'video': name}
-            violations.append(v)
+            key = get_violation_key(b, plate_text)
+            now_ts = time.time()
+            if key not in logged_keys or (now_ts - logged_keys[key] > cooldown_seconds):
+                logged_keys[key] = now_ts
 
-            ss_name = f"violation_{len(violations):04d}_{plate_text.replace(' ','_')}.jpg"
-            cv2.imwrite(f"output/violations/{ss_name}", annotated)
+                v = {
+                    'frame': frame_num,
+                    'time': time_str,
+                    'plate': plate_text,
+                    'video': name
+                    }
+                violations.append(v)
+                safe_plate = re.sub(r'[^A-Z0-9_]', '_', plate_text.replace(' ', '_'))
+                ss_name = f"violation_{len(violations):04d}_{safe_plate}.jpg"
+                cv2.imwrite(f"output/violations/{ss_name}", annotated)
 
         # Top bar
         if illegals:
@@ -215,7 +242,7 @@ if __name__ == "__main__":
 
     os.makedirs("output/violations", exist_ok=True)
 
-    model_path = "runs/detect/headlight_v2/weights/best.pt"
+    model_path = "runs/detect/headlight_v3/weights/best.pt"
     print(f" Loading: {model_path}")
     model = YOLO(model_path)
     print(" Model loaded!\n")
@@ -226,6 +253,8 @@ if __name__ == "__main__":
         "Videos/V3.webm",
         "Videos/V4.webm",
         "Videos/V5.webm",
+        "Videos/V6.webm",
+
     ]
 
     all_violations = []

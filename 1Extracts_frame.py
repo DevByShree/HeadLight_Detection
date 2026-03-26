@@ -10,6 +10,7 @@ videos = [
     "Videos/V3.webm",
     "Videos/V4.webm",
     "Videos/V5.webm",
+    "Videos/V6.webm",
 ]
 os.makedirs("all_frames",exist_ok=True)
 
